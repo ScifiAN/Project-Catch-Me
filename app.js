@@ -27,12 +27,14 @@ function setTime(){
 
 function startTheGame(){
   if (isTimerRunning === false) {
+    isTimerRunning = true;
     startAndResetButtonElement.textContent = 'stop';
     intervalId = setInterval(setTime, 1000);
     let paragrath = document.createElement('p');
     boardElement.append("", paragrath);
     paragrath.classList.add('board-element');
-  } else if (isTimerRunning === True) {
+  } else if (isTimerRunning === true) {
+    isTimerRunning = false;
     clearInterval(intervalId)
     totalseconds = 0;
     secondsElement.innerHTML = 0;
