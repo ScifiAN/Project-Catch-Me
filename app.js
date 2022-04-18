@@ -28,7 +28,7 @@ function startTheGame(){
   } else if (startAndResetButtonElement.textContent = "stop") {
     clearInterval()
     totalseconds = 0;
-    value = 0;
+    value = 0
     secondsElement.innerHTML = 0;
     minutesElement.innerHTML = 0;
     hoursElement.innerHTML = 0;
