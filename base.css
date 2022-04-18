@@ -13,3 +13,17 @@ body {
   border: 1px solid rgb(0, 0, 0);
   background-color: white;
 }
+
+#timer {
+  background-color: white;
+  color: rgb(0, 0, 0);
+  border-radius: 5px;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 2rem 2rem;
+  padding: 0;
+  width: 15rem;
+  font-size: 3rem;
+}
