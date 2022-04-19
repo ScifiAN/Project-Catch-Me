@@ -4,13 +4,21 @@ html {
 
 body {
   font-size: 1.5rem;
+  margin: 0;
   font-family: 'Times New Roman', Times, serif;
+}
+
+body h1 {
+  margin: 2rem;
+  height: 3rem;
+  width: 20rem;
 }
 
 #board{
   height: 60vh;
   width: 70vw;
   border: 1px solid rgb(0, 0, 0);
+  margin: 2rem;
   background-color: white;
 }
 
@@ -26,4 +34,12 @@ body {
   padding: 0;
   width: 15rem;
   font-size: 3rem;
+}
+
+.target {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgb(0, 0, 0);
+  background-color: rgb(231, 13, 13);
+  position: absolute;
 }
