@@ -1,8 +1,6 @@
 console.log('Starting a project!')
 
 const secondsElement = document.getElementById('seconds');
-const minutesElement = document.getElementById('minutes');
-const hoursElement = document.getElementById('hours');
 const startAndResetButtonElement = document.getElementById('start');
 const boardElement = document.getElementById('board');
 let intervalId;
@@ -11,37 +9,69 @@ let isTimerRunning = false;
 
 function pad(val){
   const value = val + "";
-  if(value.length < 2){
+  if (value.length < 2) {
     return "0" + value;
   } else {
     return value;
   }
 }
 
-function setTime(){
-  ++totalseconds;
-  secondsElement.innerHTML = pad(totalseconds) - (minutesElement.innerHTML*60) - (hoursElement.innerHTML*3600);
-  minutesElement.innerHTML = pad(parseInt(totalseconds/60)) - (hoursElement.innerHTML*60);
-  hoursElement.innerHTML = pad(parseInt(totalseconds/3600));      
+function createTarget() {
+  const boardParams = boardElement.getBoundingClientRect();
+  let x=Math.random()*(boardParams.width - 50);
+  x=Math.round(x);
+  let y=Math.random()*(boardParams.height - 50);
+  y=Math.round(y);
+  let paragrath = document.createElement('p');
+  paragrath.classList.add('target');
+  paragrath.style.left = x + 'px';
+  paragrath.style.top = y + 'px';
+  boardElement.append(paragrath);
 }
 
-function startTheGame(){
+function deleteTarget(){
+  const targetElement = document.getElementsByClassName('target');
+  targetElement[0].remove();
+}
+
+function setTime() {
+  ++totalseconds;
+  secondsElement.innerHTML = pad(totalseconds);
+  if (totalseconds == 4) {
+    deleteTarget();
+    createTarget();
+    reset();
+    startTimer();
+  }  
+}
+
+function startTimer() {
+  isTimerRunning = true;
+  startAndResetButtonElement.textContent = 'stop';
+  intervalId = setInterval(setTime, 1000);
+  
+}
+
+function reset () {
+  clearInterval(intervalId)
+  totalseconds = 0;
+  secondsElement.innerHTML = 0;
+}
+
+function stopTimer() {
+  isTimerRunning = false;
+  reset();
+  startAndResetButtonElement.textContent = 'Start the game';
+}
+
+function onClickstartTheGame() {
   if (isTimerRunning === false) {
-    isTimerRunning = true;
-    startAndResetButtonElement.textContent = 'stop';
-    intervalId = setInterval(setTime, 1000);
-    let paragrath = document.createElement('p');
-    boardElement.append("", paragrath);
-    paragrath.classList.add('board-element');
+    createTarget();
+    startTimer();
   } else if (isTimerRunning === true) {
-    isTimerRunning = false;
-    clearInterval(intervalId)
-    totalseconds = 0;
-    secondsElement.innerHTML = 0;
-    minutesElement.innerHTML = 0;
-    hoursElement.innerHTML = 0;
-    startAndResetButtonElement.textContent = 'Start the game';
+    stopTimer();
+    deleteTarget();
   }
 }
 
-startAndResetButtonElement.addEventListener('click', startTheGame);
+startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
