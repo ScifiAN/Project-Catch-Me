@@ -4,6 +4,8 @@ const secondsElement = document.getElementById('seconds');
 const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
 const boardElement = document.getElementById('board');
+let scoreBoardElement = document.getElementById('score-board');
+let score = 0;
 let intervalId;
 let totalmiliseconds = 300;
 let isTimerRunning = false;
@@ -85,6 +87,26 @@ function onHoveringTarget() {
 
 function onClickTarget() {
   console.log('great success');
+  score = score + 1;
+  scoreBoardElement.innerHTML = score;
+  deleteTarget();
+  createTarget();
+  reset();
+  startTimer();
+}
+
+function reduction() {
+  let targetElement = document.getElementsByClassName('target');
+  let target
+  target = targetElement.style.width * 0.95;
+  target = targetElement.style.width * 0.95;
+}
+
+function resetReduction () {
+  clearInterval(intervalId)
+  totalmiliseconds = 300 * (0.95 / scoreBoardElement.innerHTML);
+  miliseconds.innerHTML = 0
+  secondsElement.innerHTML = 0;
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
