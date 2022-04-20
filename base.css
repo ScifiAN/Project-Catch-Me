@@ -45,3 +45,8 @@ body h1 {
   position: absolute;
   margin: 0;
 }
+
+.target:hover{
+  background-color: rgb(255, 145, 0);
+  cursor: pointer;
+}

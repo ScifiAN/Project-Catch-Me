@@ -26,6 +26,8 @@ function createTarget() {
   paragrath.classList.add('target');
   paragrath.style.left = x + 'px';
   paragrath.style.top = y + 'px';
+  paragrath.addEventListener('mouseover', onHoveringTarget);
+  paragrath.addEventListener('click', onClickTarget);
   boardElement.append(paragrath);
 }
 
@@ -72,6 +74,14 @@ function onClickstartTheGame() {
     stopTimer();
     deleteTarget();
   }
+}
+
+function onHoveringTarget() {
+  console.log('hovering !');  
+}
+
+function onClickTarget() {
+  console.log('great success');
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
