@@ -1,10 +1,11 @@
 console.log('Starting a project!')
 
 const secondsElement = document.getElementById('seconds');
+const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
 const boardElement = document.getElementById('board');
 let intervalId;
-let totalseconds = 0;
+let totalmiliseconds = 300;
 let isTimerRunning = false;
 
 function pad(val){
@@ -37,26 +38,28 @@ function deleteTarget(){
 }
 
 function setTime() {
-  ++totalseconds;
-  secondsElement.innerHTML = pad(totalseconds);
-  if (totalseconds == 4) {
+  if (totalmiliseconds == 0) {
     deleteTarget();
     createTarget();
     reset();
     startTimer();
   }  
+  --totalmiliseconds;
+  miliseconds.innerHTML = pad(totalmiliseconds) - (secondsElement.innerHTML*100)
+  secondsElement.innerHTML = pad(parseInt(totalmiliseconds/100));
 }
 
 function startTimer() {
   isTimerRunning = true;
   startAndResetButtonElement.textContent = 'stop';
-  intervalId = setInterval(setTime, 1000);
+  intervalId = setInterval(setTime, 10);
   
 }
 
 function reset () {
   clearInterval(intervalId)
-  totalseconds = 0;
+  totalmiliseconds = 300;
+  miliseconds.innerHTML = 0
   secondsElement.innerHTML = 0;
 }
 
