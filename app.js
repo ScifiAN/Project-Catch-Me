@@ -60,7 +60,11 @@ function startTimer() {
 
 function reset () {
   clearInterval(intervalId)
-  totalmiliseconds = 300;
+  if (scoreBoardElement.innerHTML == 0) {
+    totalmiliseconds = 300
+  } else {
+    totalmiliseconds = Math.round(300 * (0.95 / scoreBoardElement.innerHTML));
+  }
   miliseconds.innerHTML = 0
   secondsElement.innerHTML = 0;
 }
@@ -91,22 +95,18 @@ function onClickTarget() {
   scoreBoardElement.innerHTML = score;
   deleteTarget();
   createTarget();
+  reduction();
   reset();
   startTimer();
 }
 
 function reduction() {
-  let targetElement = document.getElementsByClassName('target');
-  let target
-  target = targetElement.style.width * 0.95;
-  target = targetElement.style.width * 0.95;
-}
-
-function resetReduction () {
-  clearInterval(intervalId)
-  totalmiliseconds = 300 * (0.95 / scoreBoardElement.innerHTML);
-  miliseconds.innerHTML = 0
-  secondsElement.innerHTML = 0;
+  let target = document.getElementsByClassName('target');
+  targetElementWidth = target.offsetWidth * 0.95;
+  targetElementHeight = target.offsetHeight * 0.95;
+  
+  document.getElementsByClassName('target').width = targetElementWidth;
+  document.getElementsByClassName('target').height = targetElementHeight;
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
