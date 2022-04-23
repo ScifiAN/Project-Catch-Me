@@ -5,10 +5,12 @@ const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
 const boardElement = document.getElementById('board');
 let scoreBoardElement = document.getElementById('score-board');
+let lifeBoardElement = document.getElementById('lives')
 let score = 0;
 let intervalId;
 let totalmiliseconds = 300;
 let isTimerRunning = false;
+let life = 3;
 
 function pad(val){
   const value = val + "";
@@ -40,12 +42,15 @@ function deleteTarget(){
 }
 
 function setTime() {
-  if (totalmiliseconds == 0) {
+  if (totalmiliseconds == 0 && life > 0) {
+    lifeReduction();
     deleteTarget();
     createTarget();
     reset();
     startTimer();
-  }  
+  }  else if (totalmiliseconds == 0 && life == 0){
+    lifeReduction();
+  }
   --totalmiliseconds;
   miliseconds.innerHTML = pad(totalmiliseconds) - (secondsElement.innerHTML*100)
   secondsElement.innerHTML = pad(parseInt(totalmiliseconds/100));
@@ -82,6 +87,8 @@ function onClickstartTheGame() {
   } else if (isTimerRunning === true) {
     stopTimer();
     deleteTarget();
+    life = 3;
+    lifeBoardElement.innerHTML = 3;
   }
 }
 
@@ -98,6 +105,19 @@ function onClickTarget() {
   reduction();
   reset();
   startTimer();
+}
+
+function lifeReduction() {
+  if (life > 0){
+    life = life - 1;
+    lifeBoardElement.innerHTML = life;
+  } else if (life == 0) {
+    stopTimer();
+    deleteTarget();
+    alert('Game over');
+    life = 3;
+    lifeBoardElement.innerHTML = 3;
+  }
 }
 
 function reduction() {

@@ -9,7 +9,7 @@ body {
 }
 
 body h1 {
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   padding: 0;
   height: 3rem;
   width: 20rem;
@@ -20,7 +20,7 @@ body h1 {
   height: 60vh;
   width: 70vw;
   border: 1px solid rgb(0, 0, 0);
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   padding: 0;
   background-color: white;
   position: relative;
@@ -56,8 +56,8 @@ body h1 {
 
 #score-board{
   background-color: rgb(255, 145, 0);
-  margin: 1rem auto;
-  width: 15rem;
+  margin: 0.5rem auto;
+  width: 10rem;
   height: 4rem;
   font-size: 3rem;
   border-radius: 5px;
@@ -66,13 +66,42 @@ body h1 {
 
 #start {
   text-align: center;
-  margin: 0.5rem 20rem;
+  margin: 0.5rem auto;
   background-color: rgb(32, 89, 245);
   color: white;
   border: 2px solid rgb(0, 0, 0);
   border-radius: 10px;
   font-size: 1rem;
-  padding: 0;
   width: 5rem;
   height: 5rem;
+}
+
+#player-score, #player-lives {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#player {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#lives {
+  background-color: rgb(64, 241, 20);
+  color: rgb(0, 0, 0);
+  border: 1px solid rgb(0, 0, 0);
+  width: 10rem;
+  height: 4rem;
+  font-size: 3rem;
+  margin: 0.1rem auto;
+  text-align: center;
+  border-radius: 5px;
+
+}
+
+label {
+  color: white;
+  margin: 0.1rem auto;
 }
