@@ -11,6 +11,8 @@ let intervalId;
 let totalmiliseconds = 300;
 let isTimerRunning = false;
 let life = 3;
+let width = 50;
+let height = 50;
 
 function pad(val){
   const value = val + "";
@@ -42,9 +44,14 @@ function deleteTarget(){
 }
 
 function setTime() {
+  let target = document.getElementsByClassName('target');
   if (totalmiliseconds == 0 && life > 0) {
     lifeReduction();
     deleteTarget();
+    if (target[0]){
+      deleteTarget();
+    }
+    createTarget();
     createTarget();
     reset();
     startTimer();
@@ -83,10 +90,12 @@ function stopTimer() {
 function onClickstartTheGame() {
   if (isTimerRunning === false) {
     createTarget();
+    createTarget();
     startTimer();
   } else if (isTimerRunning === true) {
     stopTimer();
     deleteTarget();
+    deleteTarget()
     life = 3;
     lifeBoardElement.innerHTML = 3;
   }
@@ -98,13 +107,17 @@ function onHoveringTarget() {
 
 function onClickTarget() {
   console.log('great success');
-  score = score + 1;
-  scoreBoardElement.innerHTML = score;
+  let target = document.getElementsByClassName('target');
   deleteTarget();
-  createTarget();
-  reduction();
-  reset();
-  startTimer();
+  if (!target[0]) {
+    score = score + 1;
+    scoreBoardElement.innerHTML = score;
+    createTarget();
+    createTarget();
+    reduction();
+    reset();
+    startTimer();
+  }
 }
 
 function lifeReduction() {
@@ -114,19 +127,21 @@ function lifeReduction() {
   } else if (life == 0) {
     stopTimer();
     deleteTarget();
+    deleteTarget();
     alert('Game over');
     life = 3;
     lifeBoardElement.innerHTML = 3;
+    width = 50;
+    height = 50;
   }
 }
 
 function reduction() {
   let target = document.getElementsByClassName('target');
-  targetElementWidth = target.offsetWidth * 0.95;
-  targetElementHeight = target.offsetHeight * 0.95;
-  
-  document.getElementsByClassName('target').width = targetElementWidth;
-  document.getElementsByClassName('target').height = targetElementHeight;
+  width = Math.round(width * 0.95);
+  height = Math.round(height * 0.95);
+  target[0].style.width = width + 'px';
+  target[0].style.height = height + 'px';
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);

@@ -74,6 +74,8 @@ body h1 {
   font-size: 1rem;
   width: 5rem;
   height: 5rem;
+  position: relative;
+  display: block;
 }
 
 #player-score, #player-lives {
