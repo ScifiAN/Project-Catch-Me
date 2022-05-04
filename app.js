@@ -3,6 +3,7 @@ console.log('Starting a project!')
 const secondsElement = document.getElementById('seconds');
 const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
+const hardModeButton = document.getElementById('hard-mode');
 const boardElement = document.getElementById('board');
 let scoreBoardElement = document.getElementById('score-board');
 let lifeBoardElement = document.getElementById('lives')
@@ -25,32 +26,36 @@ function pad(val){
 
 function createTarget() {
   const boardParams = boardElement.getBoundingClientRect();
-  let x=Math.random()*(boardParams.width - 50);
+  let x=Math.random() * (boardParams.width - width);
   x=Math.round(x);
-  let y=Math.random()*(boardParams.height - 50);
+  let y=Math.random() * (boardParams.height - height);
   y=Math.round(y);
   let paragrath = document.createElement('p');
   paragrath.classList.add('target');
   paragrath.style.left = x + 'px';
   paragrath.style.top = y + 'px';
+  paragrath.style.width = width + 'px';
+  paragrath.style.height = height + 'px';
   paragrath.addEventListener('mouseover', onHoveringTarget);
   paragrath.addEventListener('click', onClickTarget);
   boardElement.append(paragrath);
 }
 
-function deleteTarget(){
-  const targetElement = document.getElementsByClassName('target');
-  targetElement[0].remove();
+function deleteTarget(event){
+  event.currentTarget.remove();
+}
+
+function deleteAllTargets() {
+  const targetElements = document.getElementsByClassName('target');
+  for ( let i = 0; i < targetElements.length; i++) {
+    targetElements[i].remove();
+  }
 }
 
 function setTime() {
-  let target = document.getElementsByClassName('target');
-  if (totalmiliseconds == 0 && life > 0) {
+  if (totalmiliseconds <= 0 && life > 0) {
     lifeReduction();
-    deleteTarget();
-    if (target[0]){
-      deleteTarget();
-    }
+    deleteAllTargets();
     createTarget();
     createTarget();
     reset();
@@ -59,8 +64,8 @@ function setTime() {
     lifeReduction();
   }
   --totalmiliseconds;
-  miliseconds.innerHTML = pad(totalmiliseconds) - (secondsElement.innerHTML*100)
-  secondsElement.innerHTML = pad(parseInt(totalmiliseconds/100));
+  miliseconds.innerHTML = pad(totalmiliseconds) - (secondsElement.innerHTML * 100)
+  secondsElement.innerHTML = pad(parseInt(totalmiliseconds / 100));
 }
 
 function startTimer() {
@@ -85,6 +90,8 @@ function stopTimer() {
   isTimerRunning = false;
   reset();
   startAndResetButtonElement.textContent = 'Start the game';
+  score = 0;
+  scoreBoardElement.innerHTML = score
 }
 
 function onClickstartTheGame() {
@@ -94,8 +101,7 @@ function onClickstartTheGame() {
     startTimer();
   } else if (isTimerRunning === true) {
     stopTimer();
-    deleteTarget();
-    deleteTarget()
+    deleteAllTargets();
     life = 3;
     lifeBoardElement.innerHTML = 3;
   }
@@ -105,10 +111,10 @@ function onHoveringTarget() {
   console.log('hovering !');  
 }
 
-function onClickTarget() {
+function onClickTarget(event) {
   console.log('great success');
+  deleteTarget(event);
   let target = document.getElementsByClassName('target');
-  deleteTarget();
   if (!target[0]) {
     score = score + 1;
     scoreBoardElement.innerHTML = score;
@@ -126,8 +132,7 @@ function lifeReduction() {
     lifeBoardElement.innerHTML = life;
   } else if (life == 0) {
     stopTimer();
-    deleteTarget();
-    deleteTarget();
+    deleteAllTargets();
     alert('Game over');
     life = 3;
     lifeBoardElement.innerHTML = 3;
@@ -140,8 +145,24 @@ function reduction() {
   let target = document.getElementsByClassName('target');
   width = Math.round(width * 0.95);
   height = Math.round(height * 0.95);
-  target[0].style.width = width + 'px';
-  target[0].style.height = height + 'px';
+  for ( let i = 0; i < target.length; i++) {
+    target[i].style.width = width + 'px';
+    target[i].style.height = height + 'px';
+  }
+}
+
+function startHardMode() {
+  if (hardModeButton.innerText == 'Hard Mode') {
+    hardModeButton.innerText = 'Easy Mode';
+    hardModeButton.removeAttribute('id', 'hard-mode');
+    hardModeButton.setAttribute('id', 'easy-mode');
+  } else if (hardModeButton.innerText == 'Easy Mode') {
+    hardModeButton.innerText = 'Hard Mode';
+    hardModeButton.removeAttribute('id', 'easy-mode');
+    hardModeButton.setAttribute('id', 'hard-mode');
+  }
+
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
+hardModeButton.addEventListener('click', startHardMode);

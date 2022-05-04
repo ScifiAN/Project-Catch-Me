@@ -107,3 +107,13 @@ label {
   color: white;
   margin: 0.1rem auto;
 }
+
+#easy-mode {
+  background-color: rgb(64, 241, 20);
+  color: rgb(0, 0, 0);
+}
+
+#hard-mode{
+  background-color: rgb(231, 13, 13);
+  color: white;
+}
