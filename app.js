@@ -3,7 +3,7 @@ console.log('Starting a project!')
 const secondsElement = document.getElementById('seconds');
 const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
-const hardModeButton = document.getElementById('hard-mode');
+const hardModeButton = document.getElementById('easy-mode');
 const boardElement = document.getElementById('board');
 let scoreBoardElement = document.getElementById('score-board');
 let lifeBoardElement = document.getElementById('lives')
@@ -14,6 +14,9 @@ let isTimerRunning = false;
 let life = 3;
 let width = 50;
 let height = 50;
+let easyMode = true;
+let reductionEasy = 0.95;
+let reductionHard = 0.9;
 
 function pad(val){
   const value = val + "";
@@ -60,7 +63,7 @@ function setTime() {
     createTarget();
     reset();
     startTimer();
-  }  else if (totalmiliseconds == 0 && life == 0){
+  }  else if (totalmiliseconds <= 0 && life == 0){
     lifeReduction();
   }
   --totalmiliseconds;
@@ -80,7 +83,17 @@ function reset () {
   if (scoreBoardElement.innerHTML == 0) {
     totalmiliseconds = 300
   } else {
-    totalmiliseconds = Math.round(300 * (0.95 / scoreBoardElement.innerHTML));
+    if (easyMode === true) {
+      totalmiliseconds = Math.round(300 * (reductionEasy / scoreBoardElement.innerHTML));
+      if (totalmiliseconds <= 10) {
+        totalmiliseconds = 10;
+      }
+    } else if (easyMode === false) {
+      totalmiliseconds = Math.round(300 * (reductionHard / scoreBoardElement.innerHTML));
+      if (totalmiliseconds <= 10) {
+        totalmiliseconds = 10;
+      }
+    }
   }
   miliseconds.innerHTML = 0
   secondsElement.innerHTML = 0;
@@ -143,23 +156,43 @@ function lifeReduction() {
 
 function reduction() {
   let target = document.getElementsByClassName('target');
-  width = Math.round(width * 0.95);
-  height = Math.round(height * 0.95);
-  for ( let i = 0; i < target.length; i++) {
-    target[i].style.width = width + 'px';
-    target[i].style.height = height + 'px';
+  if (width > 2 && height > 2){
+    if (easyMode === true){
+      width = Math.round(width * reductionEasy);
+      height = Math.round(height * reductionEasy);
+    } else if (easyMode === false){
+      width = Math.round(width * reductionHard);
+      height = Math.round(height * reductionHard);
+    }
+    for ( let i = 0; i < target.length; i++) {
+      target[i].style.width = width + 'px';
+      target[i].style.height = height + 'px';
+    }
+  } else {
+    width = 1;
+    height = 1;
+    for ( let i = 0; i < target.length; i++) {
+      target[i].style.width = width + 'px';
+      target[i].style.height = height + 'px';
+    }
   }
 }
 
 function startHardMode() {
-  if (hardModeButton.innerText == 'Hard Mode') {
+  if (easyMode === false) {
     hardModeButton.innerText = 'Easy Mode';
     hardModeButton.removeAttribute('id', 'hard-mode');
     hardModeButton.setAttribute('id', 'easy-mode');
-  } else if (hardModeButton.innerText == 'Easy Mode') {
+    easyMode = true;
+    width = 50;
+    height = 50;
+  } else if (easyMode === true) {
     hardModeButton.innerText = 'Hard Mode';
     hardModeButton.removeAttribute('id', 'easy-mode');
     hardModeButton.setAttribute('id', 'hard-mode');
+    easyMode = false;
+    width = 30;
+    height = 30;
   }
 
 }
