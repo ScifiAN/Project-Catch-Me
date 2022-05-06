@@ -6,7 +6,8 @@ const startAndResetButtonElement = document.getElementById('start');
 const hardModeButton = document.getElementById('easy-mode');
 const boardElement = document.getElementById('board');
 let scoreBoardElement = document.getElementById('score-board');
-let lifeBoardElement = document.getElementById('lives')
+let scoreBoardLabelElement = document.getElementById('score-board label');
+let lifeBoardElement = document.getElementById('lives');
 let score = 0;
 let intervalId;
 let totalmiliseconds = 300;
@@ -17,6 +18,10 @@ let height = 50;
 let easyMode = true;
 let reductionEasy = 0.95;
 let reductionHard = 0.9;
+let intervalTarget;
+let currentTargets = [];
+let mouseX;
+let mouseY;
 
 function pad(val){
   const value = val + "";
@@ -29,9 +34,9 @@ function pad(val){
 
 function createTarget() {
   const boardParams = boardElement.getBoundingClientRect();
-  let x=Math.random() * (boardParams.width - width);
+  let x = Math.random() * (boardParams.width - width);
   x=Math.round(x);
-  let y=Math.random() * (boardParams.height - height);
+  let y = Math.random() * (boardParams.height - height);
   y=Math.round(y);
   let paragrath = document.createElement('p');
   paragrath.classList.add('target');
@@ -42,17 +47,21 @@ function createTarget() {
   paragrath.addEventListener('mouseover', onHoveringTarget);
   paragrath.addEventListener('click', onClickTarget);
   boardElement.append(paragrath);
+  currentTargets.push(paragrath);
 }
 
 function deleteTarget(event){
   event.currentTarget.remove();
+  let targetElements = document.getElementsByClassName('target');
+  currentTargets = targetElements;
 }
 
 function deleteAllTargets() {
-  const targetElements = document.getElementsByClassName('target');
+  let targetElements = document.getElementsByClassName('target');
   for ( let i = 0; i < targetElements.length; i++) {
     targetElements[i].remove();
   }
+  currentTargets = [];
 }
 
 function setTime() {
@@ -75,7 +84,6 @@ function startTimer() {
   isTimerRunning = true;
   startAndResetButtonElement.textContent = 'stop';
   intervalId = setInterval(setTime, 10);
-  
 }
 
 function reset () {
@@ -183,6 +191,7 @@ function startHardMode() {
     hardModeButton.innerText = 'Easy Mode';
     hardModeButton.removeAttribute('id', 'hard-mode');
     hardModeButton.setAttribute('id', 'easy-mode');
+    scoreBoardElement.setAttribute('id', 'score-board');
     easyMode = true;
     width = 50;
     height = 50;
@@ -190,12 +199,69 @@ function startHardMode() {
     hardModeButton.innerText = 'Hard Mode';
     hardModeButton.removeAttribute('id', 'easy-mode');
     hardModeButton.setAttribute('id', 'hard-mode');
+    scoreBoardElement.setAttribute('id', 'hard');
     easyMode = false;
     width = 30;
     height = 30;
   }
+}
 
+function escapingTargetTimer(event) {
+  if (easyMode === false){
+    intervalTarget = setInterval(escapingTarget(event), 200)
+  }  
+}
+
+function escapingTarget(event) {
+  const targets = document.getElementsByClassName('target');
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+  let targetL;
+  let targetT;  
+  for ( let i = 0; i < targets.length; i++) {
+    targetL = targets[i].style.left;
+    targetT = targets[i].style.top;
+    targetL = parseInt(targetL);
+    targetT = parseInt(targetT);
+    vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
+    vectorT = Math.sqrt(targetL * targetL + targetT * targetT)
+    vectorMT = vektorM - vectorT;
+    if (mouseX >= targetL + width + 50 && mouseY >= targetT + height + 50 && vectorMT <= 50) {
+        targetL = targetL - 1;
+        targetT = targetT - 1;
+        targets[i].style.left = targetL + 'px';
+        targets[i].style.top = targetT + 'px';
+    } else if (mouseX >= targetL + 50 && mouseY >= targetT + height + 50  && vectorMT <= 50) {
+        targetT = targetT - 1;
+        targets[i].style.top = targetT + 'px';
+    } else if (mouseX <= targetL + 50 && mouseY >= targetT + height + 50  && vectorMT <= 50) {
+        targetL = targetL + 1;
+        targetT = targetT - 1;
+        targets[i].style.left = targetL + 'px';
+        targets[i].style.top = targetT + 'px';
+    } else if (mouseX >= targetL + width + 50 && mouseY >= targetT+ 50  && vectorMT <= 50) {
+        targetL = targetL - 1;
+        targets[i].style.left = targetL + 'px';
+    } else if (mouseX >= targetL + width + 50 && mouseY <= targetT + 50  && vectorMT <= 50) {
+        targetL = targetL - 1;
+        targetT = targetT + 1;
+        targets[i].style.left = targetL + 'px';
+        targets[i].style.top = targetT + 'px';
+    } else if (mouseX >= targetL + 50 && mouseY <= targetT + 50  && vectorMT <= 50) {
+        targetT = targetT + 1;
+        targets[i].style.top = targetT + 'px';
+    } else if (mouseX <= targetL + 50 && mouseY >= targetT + 50 && vectorMT <= 50) {
+        targetL = targetL + 1;
+        targets[i].style.left = targetL + 'px';
+    } else if (mouseX <= targetL + 50 && mouseY <= targetT + 50 && vectorMT <= 50) {
+        targetL = targetL + 1;
+        targetT = targetT + 1;
+        targets[i].style.left = targetL + 'px';
+        targets[i].style.top = targetT + 'px';
+    }
+  }
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
 hardModeButton.addEventListener('click', startHardMode);
+boardElement.addEventListener('mousemove', escapingTargetTimer);

@@ -64,6 +64,17 @@ body h1 {
   text-align: center;
 }
 
+#hard {
+  background-color: rgb(231, 13, 13);
+  color: white;
+  margin: 0.5rem auto;
+  width: 10rem;
+  height: 4rem;
+  font-size: 3rem;
+  border-radius: 5px;
+  text-align: center;
+}
+
 #start {
   text-align: center;
   margin: 0.5rem auto;
