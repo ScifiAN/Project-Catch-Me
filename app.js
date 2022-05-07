@@ -10,8 +10,8 @@ let scoreBoardLabelElement = document.getElementById('score-board label');
 let lifeBoardElement = document.getElementById('lives');
 let score = 0;
 let intervalId;
-let totalmiliseconds = 300;
-let initialmiliseconds = 3000 / 10;
+let totalmiliseconds = 30000;
+let initialmiliseconds = 300000 / 10;
 let minmiliseconds = 10;
 let setIntervalMilisecond = 10;
 let isTimerRunning = false;
@@ -225,56 +225,6 @@ function startHardMode() {
   }
 }
 
-// function escapingTarget() {
-//   const targets = document.getElementsByClassName('target');
-//   mouseX = event.clientX;
-//   mouseY = event.clientY;
-//   let targetL;
-//   let targetT;  
-//   for ( let i = 0; i < targets.length; i++) {
-//     targetL = targets[i].style.left;
-//     targetT = targets[i].style.top;
-//     targetL = parseInt(targetL);
-//     targetT = parseInt(targetT);
-//     vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
-//     vectorT = Math.sqrt(targetL * targetL + targetT * targetT)
-//     vectorMT = vektorM - vectorT;
-//     if (mouseX >= targetL + width + 50 && mouseY >= targetT + height + 50 && vectorMT <= 50) {
-//         targetL = targetL - 1;
-//         targetT = targetT - 1;
-//         targets[i].style.left = targetL + 'px';
-//         targets[i].style.top = targetT + 'px';
-//     } else if (mouseX >= targetL + 50 && mouseY >= targetT + height + 50  && vectorMT <= 50) {
-//         targetT = targetT - 1;
-//         targets[i].style.top = targetT + 'px';
-//     } else if (mouseX <= targetL + 50 && mouseY >= targetT + height + 50  && vectorMT <= 50) {
-//         targetL = targetL + 1;
-//         targetT = targetT - 1;
-//         targets[i].style.left = targetL + 'px';
-//         targets[i].style.top = targetT + 'px';
-//     } else if (mouseX >= targetL + width + 50 && mouseY >= targetT+ 50  && vectorMT <= 50) {
-//         targetL = targetL - 1;
-//         targets[i].style.left = targetL + 'px';
-//     } else if (mouseX >= targetL + width + 50 && mouseY <= targetT + 50  && vectorMT <= 50) {
-//         targetL = targetL - 1;
-//         targetT = targetT + 1;
-//         targets[i].style.left = targetL + 'px';
-//         targets[i].style.top = targetT + 'px';
-//     } else if (mouseX >= targetL + 50 && mouseY <= targetT + 50  && vectorMT <= 50) {
-//         targetT = targetT + 1;
-//         targets[i].style.top = targetT + 'px';
-//     } else if (mouseX <= targetL + 50 && mouseY >= targetT + 50 && vectorMT <= 50) {
-//         targetL = targetL + 1;
-//         targets[i].style.left = targetL + 'px';
-//     } else if (mouseX <= targetL + 50 && mouseY <= targetT + 50 && vectorMT <= 50) {
-//         targetL = targetL + 1;
-//         targetT = targetT + 1;
-//         targets[i].style.left = targetL + 'px';
-//         targets[i].style.top = targetT + 'px';
-//     }
-//   }
-// }
-
 function movingATarget() {
   let targetElements = document.getElementsByClassName('target');
   const boardParams = boardElement.getBoundingClientRect();
@@ -284,14 +234,16 @@ function movingATarget() {
     let targetPosY = targetElementParams.y - boardParams.y;
     let mouseXVsTargetX = mouseX - targetPosX;
     let mouseYVsTargetY = mouseY - targetPosY;
-    if (targetElementParams.x >= boardParams.x && targetElementParams.y >= boardParams.y) {
-      if (targetElementParams.x <= boardParams.x + boardParams.width && targetElementParams.y > boardParams.y) {
-        if (targetElementParams.x >= boardParams.x && targetElementParams.y <= boardParams.y + boardParams.height) {
-          if (targetElementParams.x <= boardParams.x + boardParams.width && targetElementParams.y <= boardParams.y + boardParams.height) {
-            if ((mouseXVsTargetX <= 50 || mouseYVsTargetY <= 50) && (mouseXVsTargetX > 00 && mouseYVsTargetY > 0)) {
-              let futureX = targetPosX - mouseXVsTargetX;
-              let futureY = targetPosY - mouseYVsTargetY;
-        
+    vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
+    vectorT = Math.sqrt(targetPosX * targetPosX + targetPosY * targetPosY)
+    vectorMT = vektorM - vectorT;
+    let futureX = targetPosX - mouseXVsTargetX;
+    let futureY = targetPosY - mouseYVsTargetY;
+    if (futureX >= boardParams.x && futureY >= boardParams.y) {
+      if (futureX <= boardParams.x + boardParams.width && futureY > boardParams.y) {
+        if (futureX >= boardParams.x && futureY <= boardParams.y + boardParams.height) {
+          if (futureX <= boardParams.x + boardParams.width && futureY <= boardParams.y + boardParams.height) {
+            if (vectorMT <= 50) {        
               targetElements[i].style.left = futureX + 'px';
               targetElements[i].style.top = futureY + 'px';
             }
