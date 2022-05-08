@@ -31,8 +31,8 @@ let hardModeAt = {
 }
 let intervalTarget;
 let currentTargets = [];
-let mouseX;
-let mouseY;
+let mouseX = null;
+let mouseY = null;
 
 function pad(val){
   const value = val + "";
@@ -95,9 +95,9 @@ function startTimer() {
   isTimerRunning = true;
   startAndResetButtonElement.textContent = 'stop';
   intervalId = setInterval(setTime, setIntervalMilisecond);
-  if (easyMode === false) {
-    intervalTarget = setInterval(movingATarget, setIntervalMilisecond * 20)
-  }
+  // if (easyMode === false) {
+  //   intervalTarget = setInterval(movingATarget, setIntervalMilisecond * 20)
+  // }
 }
 
 function reset () {
@@ -226,6 +226,9 @@ function startHardMode() {
 }
 
 function movingATarget() {
+  if (mouseX === null && mouseY === null){
+    return;
+  }
   let targetElements = document.getElementsByClassName('target');
   const boardParams = boardElement.getBoundingClientRect();
   for ( let i = 0; i < targetElements.length; i++) {
@@ -239,16 +242,10 @@ function movingATarget() {
     vectorMT = vektorM - vectorT;
     let futureX = targetPosX - mouseXVsTargetX;
     let futureY = targetPosY - mouseYVsTargetY;
-    if (futureX >= boardParams.x && futureY >= boardParams.y) {
-      if (futureX <= boardParams.x + boardParams.width && futureY > boardParams.y) {
-        if (futureX >= boardParams.x && futureY <= boardParams.y + boardParams.height) {
-          if (futureX <= boardParams.x + boardParams.width && futureY <= boardParams.y + boardParams.height) {
-            if (vectorMT <= 50) {        
-              targetElements[i].style.left = futureX + 'px';
-              targetElements[i].style.top = futureY + 'px';
-            }
-          }
-        }
+    if (futureX >= 0 && futureY >= 0 && futureX <= boardParams.width && futureY <= boardParams.height) {
+      if (vectorMT <= 50) {        
+        targetElements[i].style.left = futureX + 'px';
+        targetElements[i].style.top = futureY + 'px';
       }
     }
   }
@@ -264,6 +261,28 @@ function onMouseMoveCoordinates (event) {
 
   mouseX = mousePositionX;
   mouseY = mousePositionY;
+
+  let targetElements = document.getElementsByClassName('target');
+  // const boardParams = boardElement.getBoundingClientRect();
+  for ( let i = 0; i < targetElements.length; i++) {
+    let targetElementParams = targetElements[i].getBoundingClientRect();
+    let targetPosX = targetElementParams.x - boardParams.x + targetElementParams.width/2;
+    let targetPosY = targetElementParams.y - boardParams.y + targetElementParams.height/2;
+    let mouseXVsTargetX = mouseX - targetPosX;
+    let mouseYVsTargetY = mouseY - targetPosY;
+    vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
+    vectorT = Math.sqrt(targetPosX * targetPosX + targetPosY * targetPosY)
+    vectorMT = vektorM - vectorT;
+    let futureX = targetPosX - mouseXVsTargetX;
+    let futureY = targetPosY - mouseYVsTargetY;
+    if (futureX >= 0 && futureY >= 0 && futureX <= boardParams.width && futureY <= boardParams.height) {
+      if (vectorMT <= 65) {
+        console.log(futureX, futureY)
+        targetElements[i].style.left = futureX + 'px';
+        targetElements[i].style.top = futureY + 'px';
+      }
+    }
+  }
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
