@@ -95,9 +95,9 @@ function startTimer() {
   isTimerRunning = true;
   startAndResetButtonElement.textContent = 'stop';
   intervalId = setInterval(setTime, setIntervalMilisecond);
-  // if (easyMode === false) {
-  //   intervalTarget = setInterval(movingATarget, setIntervalMilisecond * 20)
-  // }
+  if (easyMode === false) {
+    intervalTarget = setInterval(movingATarget, 20)
+  }
 }
 
 function reset () {
@@ -233,22 +233,45 @@ function movingATarget() {
   const boardParams = boardElement.getBoundingClientRect();
   for ( let i = 0; i < targetElements.length; i++) {
     let targetElementParams = targetElements[i].getBoundingClientRect();
-    let targetPosX = targetElementParams.x - boardParams.x;
-    let targetPosY = targetElementParams.y - boardParams.y;
+    let targetPosX = targetElementParams.x - boardParams.x - 1;
+    let targetPosY = targetElementParams.y - boardParams.y - 1;
+
     let mouseXVsTargetX = mouseX - targetPosX;
     let mouseYVsTargetY = mouseY - targetPosY;
-    vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
-    vectorT = Math.sqrt(targetPosX * targetPosX + targetPosY * targetPosY)
-    vectorMT = vektorM - vectorT;
+    vectorMT = Math.sqrt(mouseXVsTargetX**2 + mouseYVsTargetY**2);
+
     let futureX = targetPosX - mouseXVsTargetX;
     let futureY = targetPosY - mouseYVsTargetY;
-    if (futureX >= 0 && futureY >= 0 && futureX <= boardParams.width && futureY <= boardParams.height) {
-      if (vectorMT <= 50) {        
-        targetElements[i].style.left = futureX + 'px';
-        targetElements[i].style.top = futureY + 'px';
-      }
+
+    let directionX = mouseXVsTargetX > 15 ? -1 : 1;
+    let directionY = mouseXVsTargetX > 15 ? 1 : -1;
+
+    const futureDistanceX = 3 / 2 * Math.abs(targetPosX - futureX) / vectorMT;
+    const futureDistanceY = 3 / 2 * Math.abs(targetPosY - futureY) / vectorMT;
+
+    let interValX = targetPosX + directionX * (futureDistanceX);
+    let interValY = targetPosY + directionY * (futureDistanceY);
+    let interValLongX = targetPosX + directionX * (futureDistanceX / 2);
+    let interValLongY = targetPosY + directionY * (futureDistanceY / 2);
+
+    if (vectorMT <= 65) {        
+      targetElements[i].style.left = inRange(interValX, 0, boardParams.width - targetElementParams.width) + 'px';
+      targetElements[i].style.top = inRange(interValY, 0, boardParams.height - targetElementParams.height) + 'px';
+    } else if (vectorMT > 65) {
+      targetElements[i].style.left = inRange(interValLongX, 0, boardParams.width - targetElementParams.width) + 'px';
+      targetElements[i].style.top = inRange(interValLongY, 0, boardParams.height - targetElementParams.height) + 'px';
     }
   }
+}
+
+function inRange(value, min, max) {
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
 }
 
 function onMouseMoveCoordinates (event) {
@@ -262,27 +285,22 @@ function onMouseMoveCoordinates (event) {
   mouseX = mousePositionX;
   mouseY = mousePositionY;
 
-  let targetElements = document.getElementsByClassName('target');
-  // const boardParams = boardElement.getBoundingClientRect();
-  for ( let i = 0; i < targetElements.length; i++) {
-    let targetElementParams = targetElements[i].getBoundingClientRect();
-    let targetPosX = targetElementParams.x - boardParams.x + targetElementParams.width/2;
-    let targetPosY = targetElementParams.y - boardParams.y + targetElementParams.height/2;
-    let mouseXVsTargetX = mouseX - targetPosX;
-    let mouseYVsTargetY = mouseY - targetPosY;
-    vektorM = Math.sqrt(mouseX * mouseX + mouseY * mouseY)
-    vectorT = Math.sqrt(targetPosX * targetPosX + targetPosY * targetPosY)
-    vectorMT = vektorM - vectorT;
-    let futureX = targetPosX - mouseXVsTargetX;
-    let futureY = targetPosY - mouseYVsTargetY;
-    if (futureX >= 0 && futureY >= 0 && futureX <= boardParams.width && futureY <= boardParams.height) {
-      if (vectorMT <= 65) {
-        console.log(futureX, futureY)
-        targetElements[i].style.left = futureX + 'px';
-        targetElements[i].style.top = futureY + 'px';
-      }
-    }
-  }
+  // let targetElements = document.getElementsByClassName('target');
+  // // const boardParams = boardElement.getBoundingClientRect();
+  // for ( let i = 0; i < targetElements.length; i++) {
+  //   let targetElementParams = targetElements[i].getBoundingClientRect();
+  //   let targetPosX = targetElementParams.x - boardParams.x + targetElementParams.width/2;
+  //   let targetPosY = targetElementParams.y - boardParams.y + targetElementParams.height/2;
+  //   let mouseXVsTargetX = mouseX - targetPosX;
+  //   let mouseYVsTargetY = mouseY - targetPosY;
+  //   vectorMT = Math.sqrt(mouseXVsTargetX**2 + mouseYVsTargetY**2);
+  //   let futureX = inRange(targetPosX - mouseXVsTargetX, 0, boardElement.width);
+  //   let futureY = inRange(targetPosY - mouseYVsTargetY, 0, boardParams.height);
+  //   if (vectorMT <= 65) {
+  //     targetElements[i].style.left = futureX + 'px';
+  //     targetElements[i].style.top = futureY + 'px';
+  //   }
+  // }
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
