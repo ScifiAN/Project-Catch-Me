@@ -3,17 +3,36 @@ console.log('Starting a project!')
 const secondsElement = document.getElementById('seconds');
 const milisecondsElement = document.getElementById('miliseconds');
 const startAndResetButtonElement = document.getElementById('start');
-const hardModeButton = document.getElementById('hard-mode');
+const hardModeButton = document.getElementById('easy-mode');
 const boardElement = document.getElementById('board');
 let scoreBoardElement = document.getElementById('score-board');
-let lifeBoardElement = document.getElementById('lives')
+let scoreBoardLabelElement = document.getElementById('score-board label');
+let lifeBoardElement = document.getElementById('lives');
 let score = 0;
 let intervalId;
 let totalmiliseconds = 300;
+let initialmiliseconds = 3000 / 10;
+let minmiliseconds = 10;
+let setIntervalMilisecond = 10;
 let isTimerRunning = false;
 let life = 3;
 let width = 50;
 let height = 50;
+let easyMode = true;
+let easyModeAt = {
+  height: 50,
+  width: 50,
+  reduction: 0.95
+}
+let hardModeAt = {
+  height: 30,
+  width: 30,
+  reduction: 0.9
+}
+let intervalTarget;
+let currentTargets = [];
+let mouseX = null;
+let mouseY = null;
 
 function pad(val){
   const value = val + "";
@@ -26,9 +45,9 @@ function pad(val){
 
 function createTarget() {
   const boardParams = boardElement.getBoundingClientRect();
-  let x=Math.random() * (boardParams.width - width);
+  let x = Math.random() * (boardParams.width - width);
   x=Math.round(x);
-  let y=Math.random() * (boardParams.height - height);
+  let y = Math.random() * (boardParams.height - height);
   y=Math.round(y);
   let paragrath = document.createElement('p');
   paragrath.classList.add('target');
@@ -39,17 +58,21 @@ function createTarget() {
   paragrath.addEventListener('mouseover', onHoveringTarget);
   paragrath.addEventListener('click', onClickTarget);
   boardElement.append(paragrath);
+  currentTargets.push(paragrath);
 }
 
 function deleteTarget(event){
   event.currentTarget.remove();
+  let targetElements = document.getElementsByClassName('target');
+  currentTargets = [...targetElements];
 }
 
 function deleteAllTargets() {
-  const targetElements = document.getElementsByClassName('target');
-  for ( let i = 0; i < targetElements.length; i++) {
-    targetElements[i].remove();
-  }
+  let targetElements = document.getElementsByClassName('target');
+  [...targetElements].forEach(function(target){
+    target.remove();
+  });
+  currentTargets = [];
 }
 
 function setTime() {
@@ -60,7 +83,7 @@ function setTime() {
     createTarget();
     reset();
     startTimer();
-  }  else if (totalmiliseconds == 0 && life == 0){
+  }  else if (totalmiliseconds <= 0 && life == 0){
     lifeReduction();
   }
   --totalmiliseconds;
@@ -71,16 +94,28 @@ function setTime() {
 function startTimer() {
   isTimerRunning = true;
   startAndResetButtonElement.textContent = 'stop';
-  intervalId = setInterval(setTime, 10);
-  
+  intervalId = setInterval(setTime, setIntervalMilisecond);
+  if (easyMode === false) {
+    intervalTarget = setInterval(movingATarget, 20)
+  }
 }
 
 function reset () {
   clearInterval(intervalId)
-  if (scoreBoardElement.innerHTML == 0) {
-    totalmiliseconds = 300
+  if (score == 0) {
+    totalmiliseconds = initialmiliseconds;
   } else {
-    totalmiliseconds = Math.round(300 * (0.95 / scoreBoardElement.innerHTML));
+    if (easyMode === true) {
+      totalmiliseconds = Math.round((initialmiliseconds) * (easyModeAt.reduction / score));
+      if (totalmiliseconds <= minmiliseconds) {
+        totalmiliseconds = minmiliseconds;
+      }
+    } else if (easyMode === false) {
+      totalmiliseconds = Math.round((initialmiliseconds) * (hardModeAt.reduction / score));
+      if (totalmiliseconds <= minmiliseconds) {
+        totalmiliseconds = minmiliseconds;
+      }
+    }
   }
   miliseconds.innerHTML = 0
   secondsElement.innerHTML = 0;
@@ -103,7 +138,7 @@ function onClickstartTheGame() {
     stopTimer();
     deleteAllTargets();
     life = 3;
-    lifeBoardElement.innerHTML = 3;
+    lifeBoardElement.innerHTML = life;
   }
 }
 
@@ -135,34 +170,139 @@ function lifeReduction() {
     deleteAllTargets();
     alert('Game over');
     life = 3;
-    lifeBoardElement.innerHTML = 3;
-    width = 50;
-    height = 50;
+    lifeBoardElement.innerHTML = life;
+    if (easyMode === true) {
+      width = easyModeAt.width;
+      height = easyModeAt.height;
+    } else if (easyMode === false) {
+      width = hardModeAt.width;
+      height = hardModeAt.height;
+    }
   }
 }
 
 function reduction() {
   let target = document.getElementsByClassName('target');
-  width = Math.round(width * 0.95);
-  height = Math.round(height * 0.95);
-  for ( let i = 0; i < target.length; i++) {
-    target[i].style.width = width + 'px';
-    target[i].style.height = height + 'px';
+  if (width > 2 && height > 2){
+    if (easyMode === true){
+      width = Math.round(width * easyModeAt.reduction);
+      height = Math.round(height * easyModeAt.reduction);
+    } else if (easyMode === false){
+      width = Math.round(width * hardModeAt.reduction);
+      height = Math.round(height * hardModeAt.reduction);
+    }
+    for ( let i = 0; i < target.length; i++) {
+      target[i].style.width = width + 'px';
+      target[i].style.height = height + 'px';
+    }
+  } else {
+    width = 1;
+    height = 1;
+    for ( let i = 0; i < target.length; i++) {
+      target[i].style.width = width + 'px';
+      target[i].style.height = height + 'px';
+    }
   }
 }
 
 function startHardMode() {
-  if (hardModeButton.innerText == 'Hard Mode') {
+  if (easyMode === false) {
     hardModeButton.innerText = 'Easy Mode';
     hardModeButton.removeAttribute('id', 'hard-mode');
     hardModeButton.setAttribute('id', 'easy-mode');
-  } else if (hardModeButton.innerText == 'Easy Mode') {
+    scoreBoardElement.setAttribute('id', 'score-board');
+    easyMode = true;
+    width = easyModeAt.width;
+    height = easyModeAt.height;
+  } else if (easyMode === true) {
     hardModeButton.innerText = 'Hard Mode';
     hardModeButton.removeAttribute('id', 'easy-mode');
     hardModeButton.setAttribute('id', 'hard-mode');
+    scoreBoardElement.setAttribute('id', 'hard');
+    easyMode = false;
+    width = hardModeAt.width;
+    height = hardModeAt.height;
   }
+}
 
+function movingATarget() {
+  if (mouseX === null && mouseY === null){
+    return;
+  }
+  let targetElements = document.getElementsByClassName('target');
+  const boardParams = boardElement.getBoundingClientRect();
+  for ( let i = 0; i < targetElements.length; i++) {
+    let targetElementParams = targetElements[i].getBoundingClientRect();
+    let targetPosX = targetElementParams.x - boardParams.x - 1;
+    let targetPosY = targetElementParams.y - boardParams.y - 1;
+
+    let mouseXVsTargetX = mouseX - targetPosX;
+    let mouseYVsTargetY = mouseY - targetPosY;
+    vectorMT = Math.sqrt(mouseXVsTargetX**2 + mouseYVsTargetY**2);
+
+    let futureX = targetPosX - mouseXVsTargetX;
+    let futureY = targetPosY - mouseYVsTargetY;
+
+    let directionX = mouseXVsTargetX > 15 ? -1 : 1;
+    let directionY = mouseXVsTargetX > 15 ? 1 : -1;
+
+    const futureDistanceX = 3 / 2 * Math.abs(targetPosX - futureX) / vectorMT;
+    const futureDistanceY = 3 / 2 * Math.abs(targetPosY - futureY) / vectorMT;
+
+    let interValX = targetPosX + directionX * (futureDistanceX);
+    let interValY = targetPosY + directionY * (futureDistanceY);
+    let interValLongX = targetPosX + directionX * (futureDistanceX / 2);
+    let interValLongY = targetPosY + directionY * (futureDistanceY / 2);
+
+    if (vectorMT <= 65) {        
+      targetElements[i].style.left = inRange(interValX, 0, boardParams.width - targetElementParams.width) + 'px';
+      targetElements[i].style.top = inRange(interValY, 0, boardParams.height - targetElementParams.height) + 'px';
+    } else if (vectorMT > 65) {
+      targetElements[i].style.left = inRange(interValLongX, 0, boardParams.width - targetElementParams.width) + 'px';
+      targetElements[i].style.top = inRange(interValLongY, 0, boardParams.height - targetElementParams.height) + 'px';
+    }
+  }
+}
+
+function inRange(value, min, max) {
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
+}
+
+function onMouseMoveCoordinates (event) {
+  const positionX = event.clientX;
+  const positionY = event.clientY;
+
+  const boardParams = boardElement.getBoundingClientRect();
+  let mousePositionX = positionX - boardParams.x;
+  let mousePositionY = positionY - boardParams.y;
+
+  mouseX = mousePositionX;
+  mouseY = mousePositionY;
+
+  // let targetElements = document.getElementsByClassName('target');
+  // // const boardParams = boardElement.getBoundingClientRect();
+  // for ( let i = 0; i < targetElements.length; i++) {
+  //   let targetElementParams = targetElements[i].getBoundingClientRect();
+  //   let targetPosX = targetElementParams.x - boardParams.x + targetElementParams.width/2;
+  //   let targetPosY = targetElementParams.y - boardParams.y + targetElementParams.height/2;
+  //   let mouseXVsTargetX = mouseX - targetPosX;
+  //   let mouseYVsTargetY = mouseY - targetPosY;
+  //   vectorMT = Math.sqrt(mouseXVsTargetX**2 + mouseYVsTargetY**2);
+  //   let futureX = inRange(targetPosX - mouseXVsTargetX, 0, boardElement.width);
+  //   let futureY = inRange(targetPosY - mouseYVsTargetY, 0, boardParams.height);
+  //   if (vectorMT <= 65) {
+  //     targetElements[i].style.left = futureX + 'px';
+  //     targetElements[i].style.top = futureY + 'px';
+  //   }
+  // }
 }
 
 startAndResetButtonElement.addEventListener('click', onClickstartTheGame);
 hardModeButton.addEventListener('click', startHardMode);
+boardElement.addEventListener('mousemove', onMouseMoveCoordinates);
